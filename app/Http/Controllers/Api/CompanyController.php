@@ -37,6 +37,9 @@ class CompanyController extends Controller
         try{
             $company = new Company();
 
+            $company->name = $request->name;
+            $company->email = $request->email;
+
             if ($request->hasFile('logo')) {
                 $image = $request->file('logo');
                 $fileName = Str::random(10).'.'.$image->getClientOriginalExtension();
@@ -46,15 +49,13 @@ class CompanyController extends Controller
                 $company->logo = $fileName;
             }
 
-            $company->save();
-            
-                $update_prop = Company::where('id', $company->id)->update(['name' => $request->name, 'email' => $request->email ]);
-            if ($update_prop)
-            {
+            if ($company->save()){
                 return response()->json(['data' => $company, 'status' => 201 ]);
-            }else{
+            }
+            else{
                 return response()->json(['status' => 'data not save']);
             }
+
         }catch (\Exception $exception){
             return response()->json($exception->getMessage(), 422);
         }
